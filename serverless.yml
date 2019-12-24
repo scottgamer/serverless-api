@@ -1,4 +1,3 @@
-
 service: serverless-api
 
 custom:
@@ -10,39 +9,38 @@ provider:
   runtime: nodejs12.x
   environment: ${self:custom.settings}
   region: us-east-1
-  iamRoleStatements: 
-    - Effect: "Allow"
-      Actions: 
-        - dynamodb: DescribeTable
-        - dynamodb: Scan
-        - dynamodb: GetItem
-        - dynamodb: PutItem
-        - dynamodb: UpdateItem
-        - dynamodb: DeleteItem
-      Resource:
-        - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.settings.POSTS_TABLE}"
-
+  iamRoleStatements:
+   - Effect: "Allow"
+     Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+     Resource:
+      - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.settings.POSTS_TABLE}"
 
 functions:
   createPost:
     handler: handler.createPost
-    events: 
-    - http:
-      path: /post
-      method: post
+    events:
+      - http:
+          path: /post
+          method: post
 
 resources:
   Resources:
     PostsTable:
       Type: AWS::DynamoDB::Table
-      Properties: 
+      Properties:
         AttributeDefinitions:
           - AttributeName: "id"
             AttributeType: "S"
-          KeySchema:
+        KeySchema:
           - AttributeName: "id"
             KeyType: "HASH"
-          ProvisionedThroughput:
-            ReadCapacityUnits: 1
-            WriteCapacity: 1
-          TableName: ${self:custom.settings.POSTS_TABLE}
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:custom.settings.POSTS_TABLE}
